@@ -1,8 +1,8 @@
-import fitz  # PyMuPDF
+import fitz
 
-def read_resume(path):
-    text = ""
-    with fitz.open(path) as doc:
-        for page in doc:
-            text += page.get_text()
-    return text
+def readres(p):
+    txt = ""
+    with fitz.open(p) as d:
+        for pg in d:
+            txt += pg.get_text()
+    return txt

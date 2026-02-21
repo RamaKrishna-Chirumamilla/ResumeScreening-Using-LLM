@@ -2,17 +2,17 @@ from transformers import AutoTokenizer, AutoModel
 import torch
 import numpy as np
 
-tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
-model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+tok = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+mdl = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
 
-def mean_pooling(model_output, attention_mask):
-    token_embeddings = model_output.last_hidden_state
-    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
-    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+def meanpool(out, mask):
+    tokemb = out.last_hidden_state
+    maskexp = mask.unsqueeze(-1).expand(tokemb.size()).float()
+    return torch.sum(tokemb * maskexp, 1) / torch.clamp(maskexp.sum(1), min=1e-9)
 
-def get_embedding(text):
-    encoded = tokenizer(text, padding=True, truncation=True, return_tensors="pt")
+def getemb(txt):
+    enc = tok(txt, padding=True, truncation=True, return_tensors="pt")
     with torch.no_grad():
-        model_output = model(**encoded)
-    embedding = mean_pooling(model_output, encoded["attention_mask"])
-    return embedding[0].numpy()
+        out = mdl(**enc)
+    emb = meanpool(out, enc["attention_mask"])
+    return emb[0].numpy()
